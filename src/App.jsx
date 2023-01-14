@@ -12,6 +12,7 @@ import {
 } from "react-pro-sidebar";
 import { Divider, Box, Typography, CssBaseline, Tooltip } from "@mui/material";
 import { ErrorBoundary } from "react-error-boundary";
+import styled from "styled-components";
 import { Fallback } from "./components/Fallback";
 import { Colors } from "./constants/styles";
 import { AuthContext } from "./contexts/AuthContext";
@@ -21,7 +22,14 @@ import PersonIcon from "@mui/icons-material/Person";
 import PersonPinIcon from "@mui/icons-material/PersonPin";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 // Import Page
-import { Home, LoginCaleg, LoginSaksiTps } from "./pages/index";
+import {
+  Home,
+  LoginCaleg,
+  LoginSaksiTps,
+  DaftarUser,
+  TambahUser,
+  UbahUser
+} from "./pages/index";
 
 const App = () => {
   const { screenSize, setScreenSize } = useStateContext();
@@ -52,7 +60,6 @@ const App = () => {
   const openMenuFunction = () => {
     setOpen(!open);
     collapseSidebar();
-    alert(window.location.pathname);
   };
 
   const contentWrapper = {
@@ -87,7 +94,7 @@ const App = () => {
               </Box> */}
               <Menu>
                 {user.tipeUser === "ADMIN" && (
-                  <Link to="/user" style={linkText}>
+                  <Link to="/daftarUser" style={linkText}>
                     <MenuItem
                       rootStyles={{
                         backgroundColor:
@@ -138,6 +145,13 @@ const App = () => {
                   <Route path="/loginCaleg" element={<LoginCaleg />} />
                   <Route path="/loginSaksiTps" element={<LoginSaksiTps />} />
                   <Route path="/unauthorized" element={<Home />} />
+                  <Route path="/daftarUser" element={<DaftarUser />} />
+                  <Route path="/daftarUser/:id" element={<DaftarUser />} />
+                  <Route path="/daftarUser/:id/edit" element={<UbahUser />} />
+                  <Route
+                    path="/daftarUser/tambahUser"
+                    element={<TambahUser />}
+                  />
                 </Routes>
               </ErrorBoundary>
             </Box>

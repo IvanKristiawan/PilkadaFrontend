@@ -27,6 +27,7 @@ const UbahTps = () => {
   const [namaTps, setNamaTps] = useState("");
   const [noHpSaksi, setNoHpSaksi] = useState("");
   const [namaSaksi, setNamaSaksi] = useState("");
+  const [jumlahPemilih, setJumlahPemilih] = useState("");
   const [passwordSaksi, setPasswordSaksi] = useState("");
   const [passwordSaksiAwal, setPasswordSaksiAwal] = useState("");
   const [error, setError] = useState(false);
@@ -61,6 +62,7 @@ const UbahTps = () => {
     setNamaTps(pickedTps.data.namaTps);
     setNoHpSaksi(pickedTps.data.noHpSaksi);
     setNamaSaksi(pickedTps.data.namaSaksi);
+    setJumlahPemilih(pickedTps.data.jumlahPemilih);
     setPasswordSaksiAwal(pickedTps.data.passwordSaksi);
     setCalegAwal(pickedTps.data.idCaleg.nama);
     setCaleg(pickedTps.data.idCaleg.nama);
@@ -118,7 +120,10 @@ const UbahTps = () => {
       date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
 
     let isFailedValidation =
-      namaTps.length === 0 || noHpSaksi.length === 0 || namaSaksi.length === 0;
+      namaTps.length === 0 ||
+      noHpSaksi.length === 0 ||
+      namaSaksi.length === 0 ||
+      jumlahPemilih.length === 0;
     if (isFailedValidation) {
       setError(true);
       setOpen(!open);
@@ -135,6 +140,7 @@ const UbahTps = () => {
           namaTps,
           noHpSaksi,
           namaSaksi,
+          jumlahPemilih,
           passwordSaksi: !passwordSaksi ? passwordSaksiAwal : passwordSaksi,
           tglUpdate: current_date,
           jamUpdate: current_time,
@@ -189,6 +195,8 @@ const UbahTps = () => {
             <Typography sx={[labelInput, spacingTop]}>No. TPS</Typography>
             <TextField
               size="small"
+              error={error && noTps.length === 0 && true}
+              helperText={error && noTps.length === 0 && "No. TPS harus diisi!"}
               id="outlined-basic"
               variant="outlined"
               value={noTps}
@@ -212,6 +220,10 @@ const UbahTps = () => {
             <Typography sx={[labelInput, spacingTop]}>No. HP Saksi</Typography>
             <TextField
               type="number"
+              error={error && noHpSaksi.length === 0 && true}
+              helperText={
+                error && noHpSaksi.length === 0 && "No. HP Saksi harus diisi!"
+              }
               size="small"
               id="outlined-basic"
               variant="outlined"
@@ -223,10 +235,31 @@ const UbahTps = () => {
             <Typography sx={labelInput}>Nama Saksi</Typography>
             <TextField
               size="small"
+              error={error && namaSaksi.length === 0 && true}
+              helperText={
+                error && namaSaksi.length === 0 && "Nama Saksi harus diisi!"
+              }
               id="outlined-basic"
               variant="outlined"
               value={namaSaksi}
               onChange={(e) => setNamaSaksi(e.target.value.toUpperCase())}
+            />
+            <Typography sx={[labelInput, spacingTop]}>
+              Jumlah Pemilih
+            </Typography>
+            <TextField
+              tpye="number"
+              error={error && jumlahPemilih.length === 0 && true}
+              helperText={
+                error &&
+                jumlahPemilih.length === 0 &&
+                "Jumlah Pemilih harus diisi!"
+              }
+              size="small"
+              id="outlined-basic"
+              variant="outlined"
+              value={jumlahPemilih}
+              onChange={(e) => setJumlahPemilih(e.target.value.toUpperCase())}
             />
             <Typography sx={[labelInput, spacingTop]}>
               Password Saksi

@@ -189,6 +189,10 @@ const TambahTps = () => {
             <Typography sx={[labelInput, spacingTop]}>No. HP Saksi</Typography>
             <TextField
               type="number"
+              error={error && noHpSaksi.length === 0 && true}
+              helperText={
+                error && noHpSaksi.length === 0 && "No. HP Saksi harus diisi!"
+              }
               size="small"
               id="outlined-basic"
               variant="outlined"
@@ -200,6 +204,10 @@ const TambahTps = () => {
             <Typography sx={labelInput}>Nama Saksi</Typography>
             <TextField
               size="small"
+              error={error && namaSaksi.length === 0 && true}
+              helperText={
+                error && namaSaksi.length === 0 && "Nama Saksi harus diisi!"
+              }
               id="outlined-basic"
               variant="outlined"
               value={namaSaksi}

@@ -178,11 +178,13 @@ const App = () => {
                   </Link>
                 )}
                 <Divider />
-                <Link to="/tps" style={linkText}>
-                  <MenuItem icon={<AccountBalanceIcon name="tps" />}>
-                    TPS
-                  </MenuItem>
-                </Link>
+                {!user.tipeUser && (
+                  <Link to="/tps" style={linkText}>
+                    <MenuItem icon={<AccountBalanceIcon name="tps" />}>
+                      TPS
+                    </MenuItem>
+                  </Link>
+                )}
                 <Divider />
               </Menu>
             </Sidebar>

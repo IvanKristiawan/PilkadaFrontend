@@ -13,3 +13,5 @@ export { default as UbahProfilCaleg } from "./Caleg/UbahProfilCaleg";
 export { default as DaftarTps } from "./DaftarTps/DaftarTps";
 export { default as TambahTps } from "./DaftarTps/TambahTps";
 export { default as UbahTps } from "./DaftarTps/UbahTps";
+// TPS
+export { default as TampilTps } from "./Tps/TampilTps";

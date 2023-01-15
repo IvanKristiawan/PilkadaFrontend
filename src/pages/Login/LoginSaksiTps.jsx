@@ -42,7 +42,7 @@ const LoginSaksiTps = () => {
         passwordSaksi
       });
       dispatch({ type: "LOGIN_SUCCESS", payload: res.data.details });
-      navigate("/");
+      navigate(`/tps/${res.data.details._id}`);
     } catch (err) {
       setOpen(true);
       dispatch({ type: "LOGIN_FAILURE", payload: err.response.data });

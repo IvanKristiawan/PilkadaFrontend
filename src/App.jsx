@@ -3,13 +3,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import { Header, ChipUser } from "./components";
-import {
-  Sidebar,
-  Menu,
-  SubMenu,
-  MenuItem,
-  useProSidebar
-} from "react-pro-sidebar";
+import { Sidebar, Menu, MenuItem, useProSidebar } from "react-pro-sidebar";
 import {
   Divider,
   Box,
@@ -17,18 +11,14 @@ import {
   CssBaseline,
   Tooltip,
   Avatar,
-  Stack,
-  Chip,
   Paper
 } from "@mui/material";
 import { ErrorBoundary } from "react-error-boundary";
-import styled from "styled-components";
 import { Fallback } from "./components/Fallback";
 import { Colors } from "./constants/styles";
 import { AuthContext } from "./contexts/AuthContext";
 import { useStateContext } from "./contexts/ContextProvider";
 import MenuIcon from "@mui/icons-material/Menu";
-import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import PersonPinIcon from "@mui/icons-material/PersonPin";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
@@ -45,7 +35,8 @@ import {
   UbahProfilCaleg,
   DaftarTps,
   TambahTps,
-  UbahTps
+  UbahTps,
+  TampilTps
 } from "./pages/index";
 
 const App = () => {
@@ -53,6 +44,16 @@ const App = () => {
   const { collapseSidebar } = useProSidebar();
   const { user } = useContext(AuthContext);
   const [open, setOpen] = useState(true);
+
+  const USERRoute = ({ children }) => {
+    const { user } = useContext(AuthContext);
+
+    if (user) {
+      return children;
+    }
+
+    return <Navigate to="/unauthorized" />;
+  };
 
   const ADMINCALEGRoute = ({ children }) => {
     const { user } = useContext(AuthContext);
@@ -179,7 +180,7 @@ const App = () => {
                 )}
                 <Divider />
                 {!user.tipeUser && (
-                  <Link to="/tps" style={linkText}>
+                  <Link to={`/tps/${user._id}`} style={linkText}>
                     <MenuItem icon={<AccountBalanceIcon name="tps" />}>
                       TPS
                     </MenuItem>
@@ -290,6 +291,15 @@ const App = () => {
                       <ADMINCALEGRoute>
                         <TambahTps />
                       </ADMINCALEGRoute>
+                    }
+                  />
+                  {/* TPS */}
+                  <Route
+                    path="/tps/:id"
+                    element={
+                      <USERRoute>
+                        <TampilTps />
+                      </USERRoute>
                     }
                   />
                 </Routes>

@@ -32,6 +32,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import PersonPinIcon from "@mui/icons-material/PersonPin";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import ListAltIcon from "@mui/icons-material/ListAlt";
 // Import Page
 import {
   Home,
@@ -41,7 +42,10 @@ import {
   TambahUser,
   UbahUser,
   ProfilCaleg,
-  UbahProfilCaleg
+  UbahProfilCaleg,
+  DaftarTps,
+  TambahTps,
+  UbahTps
 } from "./pages/index";
 
 const App = () => {
@@ -49,6 +53,16 @@ const App = () => {
   const { collapseSidebar } = useProSidebar();
   const { user } = useContext(AuthContext);
   const [open, setOpen] = useState(true);
+
+  const ADMINCALEGRoute = ({ children }) => {
+    const { user } = useContext(AuthContext);
+
+    if (user.tipeUser === "ADMIN" || user.tipeUser === "CALEG") {
+      return children;
+    }
+
+    return <Navigate to="/unauthorized" />;
+  };
 
   const ADMINRoute = ({ children }) => {
     const { user } = useContext(AuthContext);
@@ -156,6 +170,14 @@ const App = () => {
                   </Link>
                 )}
                 <Divider />
+                {user.tipeUser && (
+                  <Link to="/daftarTps" style={linkText}>
+                    <MenuItem icon={<ListAltIcon name="daftar-tps" />}>
+                      Daftar TPS
+                    </MenuItem>
+                  </Link>
+                )}
+                <Divider />
                 <Link to="/tps" style={linkText}>
                   <MenuItem icon={<AccountBalanceIcon name="tps" />}>
                     TPS
@@ -233,6 +255,39 @@ const App = () => {
                       <CALEGRoute>
                         <UbahProfilCaleg />
                       </CALEGRoute>
+                    }
+                  />
+                  {/* Daftar TPS */}
+                  <Route
+                    path="/daftarTps"
+                    element={
+                      <ADMINCALEGRoute>
+                        <DaftarTps />
+                      </ADMINCALEGRoute>
+                    }
+                  />
+                  <Route
+                    path="/daftarTps/:id"
+                    element={
+                      <ADMINCALEGRoute>
+                        <DaftarTps />
+                      </ADMINCALEGRoute>
+                    }
+                  />
+                  <Route
+                    path="/daftarTps/:id/edit"
+                    element={
+                      <ADMINCALEGRoute>
+                        <UbahTps />
+                      </ADMINCALEGRoute>
+                    }
+                  />
+                  <Route
+                    path="/daftarTps/tambahTps"
+                    element={
+                      <ADMINCALEGRoute>
+                        <TambahTps />
+                      </ADMINCALEGRoute>
                     }
                   />
                 </Routes>

@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { namaPerusahaan } from "../../constants/GeneralSetting";
 import { AuthContext } from "../../contexts/AuthContext";
 import { tempUrl, useStateContext } from "../../contexts/ContextProvider";
-import { ShowTableUser } from "../../components/ShowTable";
+import { namaPerusahaan } from "../../constants/GeneralSetting";
+import { ShowTableDaftarTps } from "../../components/ShowTable";
 import { FetchErrorHandling } from "../../components/FetchErrorHandling";
-import { SearchBar, Loader, usePagination } from "../../components";
+import {
+  SearchBar,
+  Loader,
+  usePagination,
+  ButtonModifier
+} from "../../components";
 import {
   Box,
   TextField,
@@ -14,51 +19,39 @@ import {
   Divider,
   Pagination,
   Button,
-  ButtonGroup,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions
+  ButtonGroup
 } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import PrintIcon from "@mui/icons-material/Print";
 
-const DaftarUser = () => {
-  const { user, dispatch } = useContext(AuthContext);
+const DaftarTps = () => {
+  const { user } = useContext(AuthContext);
   const location = useLocation();
   const id = location.pathname.split("/")[2];
   const { screenSize } = useStateContext();
 
   const [isFetchError, setIsFetchError] = useState(false);
-  const [nama, setNama] = useState("");
-  const [tipeUser, setTipeUser] = useState("");
-  const [password, setPassword] = useState("");
-
+  const [caleg, setCaleg] = useState("");
+  const [noTps, setNoTps] = useState("");
+  const [namaTps, setNamaTps] = useState("");
+  const [noHpSaksi, setNoHpSaksi] = useState("");
+  const [namaSaksi, setNamaSaksi] = useState("");
+  const [jumlahPemilih, setJumlahPemilih] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [users, setUser] = useState([]);
+  const [tpsData, setTpsData] = useState([]);
+  const [tpsForDoc, setTpsForDoc] = useState([]);
   const navigate = useNavigate();
-  let isUserExist = nama.length !== 0;
+  let isTpsExist = noTps.length !== 0;
 
   const columns = [
-    { title: "Nama", field: "nama" },
-    { title: "Tipe User", field: "tipeUser" },
-    { title: "Password", field: "password" }
+    { title: "Caleg", field: "caleg" },
+    { title: "No. TPS", field: "noTps" },
+    { title: "Nama TPS", field: "namaTps" },
+    { title: "No. HP Saksi", field: "noHpSaksi" },
+    { title: "Nama Saksi", field: "namaSaksi" },
+    { title: "Jumlah", field: "jumlahPemilih" }
   ];
-
-  const [open, setOpen] = useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   const [loading, setLoading] = useState(false);
   let [page, setPage] = useState(1);
@@ -67,13 +60,16 @@ const DaftarUser = () => {
   // Get current posts
   const indexOfLastPost = page * PER_PAGE;
   const indexOfFirstPost = indexOfLastPost - PER_PAGE;
-  const tempPosts = users.filter((val) => {
+  const tempPosts = tpsData.filter((val) => {
     if (searchTerm === "") {
       return val;
     } else if (
-      val.nama.toUpperCase().includes(searchTerm.toUpperCase()) ||
-      val.tipeUser.toUpperCase().includes(searchTerm.toUpperCase()) ||
-      val.password.toUpperCase().includes(searchTerm.toUpperCase())
+      val.idCaleg.nama.toUpperCase().includes(searchTerm.toUpperCase()) ||
+      val.noTps.toUpperCase().includes(searchTerm.toUpperCase()) ||
+      val.namaTps.toUpperCase().includes(searchTerm.toUpperCase()) ||
+      val.noHpSaksi.toUpperCase().includes(searchTerm.toUpperCase()) ||
+      val.namaSaksi.toUpperCase().includes(searchTerm.toUpperCase()) ||
+      val.jumlahPemilih.toUpperCase().includes(searchTerm.toUpperCase())
     ) {
       return val;
     }
@@ -81,7 +77,7 @@ const DaftarUser = () => {
   const currentPosts = tempPosts.slice(indexOfFirstPost, indexOfLastPost);
 
   const count = Math.ceil(tempPosts.length / PER_PAGE);
-  const _DATA = usePagination(users, PER_PAGE);
+  const _DATA = usePagination(tpsData, PER_PAGE);
 
   const handleChange = (e, p) => {
     setPage(p);
@@ -89,56 +85,84 @@ const DaftarUser = () => {
   };
 
   useEffect(() => {
-    getUsers();
-    id && getUserById();
+    getTpsForDoc();
+    getTpsData();
+    id && getTpsById();
   }, [id]);
 
-  const getUsers = async () => {
+  const getTpsData = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(`${tempUrl}/users`, {
-        id: user._id,
-        token: user.token
-      });
-      setUser(response.data);
+      if (user.tipeUser === "ADMIN") {
+        const allTps = await axios.post(`${tempUrl}/allTps`, {
+          id: user._id,
+          token: user.token
+        });
+        setTpsData(allTps.data);
+      } else {
+        const allTps = await axios.post(`${tempUrl}/allTpsCaleg`, {
+          id: user._id,
+          token: user.token
+        });
+        setTpsData(allTps.data);
+      }
     } catch (err) {
       setIsFetchError(true);
     }
     setLoading(false);
   };
 
-  const getUserById = async () => {
+  const getTpsForDoc = async () => {
+    setLoading(true);
+    try {
+      if (user.tipeUser === "ADMIN") {
+        const allTpsForDoc = await axios.post(`${tempUrl}/allTpsForDoc`, {
+          id: user._id,
+          token: user.token
+        });
+        setTpsForDoc(allTpsForDoc.data);
+      } else {
+        const allTpsForDoc = await axios.post(`${tempUrl}/allTpsForDocCaleg`, {
+          id: user._id,
+          token: user.token
+        });
+        setTpsForDoc(allTpsForDoc.data);
+      }
+    } catch (err) {
+      setIsFetchError(true);
+    }
+    setLoading(false);
+  };
+
+  const getTpsById = async () => {
     if (id) {
-      const response = await axios.post(`${tempUrl}/findUser/${id}`, {
+      const pickedTps = await axios.post(`${tempUrl}/tps/${id}`, {
         id: user._id,
         token: user.token
       });
-      setNama(response.data.nama);
-      setTipeUser(response.data.tipeUser);
-      setPassword(response.data.password);
+      setCaleg(pickedTps.data.idCaleg.nama);
+      setNoTps(pickedTps.data.noTps);
+      setNamaTps(pickedTps.data.namaTps);
+      setNoHpSaksi(pickedTps.data.noHpSaksi);
+      setNamaSaksi(pickedTps.data.namaSaksi);
+      setJumlahPemilih(pickedTps.data.jumlahPemilih);
     }
   };
 
-  const deleteUser = async (id) => {
+  const deleteTps = async (id) => {
     try {
       setLoading(true);
-      await axios.post(`${tempUrl}/deleteUser/${id}`, {
-        tipeAdmin: user.tipeUser,
+      await axios.post(`${tempUrl}/deleteTps/${id}`, {
         id: user._id,
         token: user.token
       });
-      getUsers();
-      setNama("");
-      setTipeUser("");
-      setPassword("");
+      setNoTps("");
+      setNamaTps("");
+      setNoHpSaksi("");
+      setNamaSaksi("");
+      setJumlahPemilih("");
       setLoading(false);
-
-      if (user._id === id) {
-        dispatch({ type: "LOGOUT" });
-        navigate("/");
-      } else {
-        navigate("/daftarUser");
-      }
+      navigate("/daftarTps");
     } catch (error) {
       console.log(error);
     }
@@ -154,7 +178,7 @@ const DaftarUser = () => {
     doc.setFontSize(12);
     doc.text(`${namaPerusahaan}`, 15, 10);
     doc.setFontSize(16);
-    doc.text(`Daftar User`, 90, 30);
+    doc.text(`Daftar Tps`, 90, 30);
     doc.setFontSize(10);
     doc.text(
       `Dicetak Oleh: ${user.nama} | Tanggal : ${current_date} | Jam : ${current_time}`,
@@ -165,13 +189,13 @@ const DaftarUser = () => {
     doc.autoTable({
       startY: doc.pageCount > 1 ? doc.autoTableEndPosY() + 20 : 45,
       columns: columns.map((col) => ({ ...col, dataKey: col.field })),
-      body: users,
+      body: tpsForDoc,
       headStyles: {
         fillColor: [117, 117, 117],
         color: [0, 0, 0]
       }
     });
-    doc.save(`daftarUser.pdf`);
+    doc.save(`daftarTps.pdf`);
   };
 
   if (loading) {
@@ -184,9 +208,9 @@ const DaftarUser = () => {
 
   return (
     <Box sx={container}>
-      <Typography color="#757575">User</Typography>
+      <Typography color="#757575">Daftar TPS</Typography>
       <Typography variant="h4" sx={subTitleText}>
-        Daftar User
+        Daftar TPS
       </Typography>
       <Box sx={downloadButtons}>
         <ButtonGroup variant="outlined" color="secondary">
@@ -196,66 +220,21 @@ const DaftarUser = () => {
         </ButtonGroup>
       </Box>
       <Box sx={buttonModifierContainer}>
-        <Button
-          variant="contained"
-          color="success"
-          sx={{ bgcolor: "success.light", textTransform: "none" }}
-          startIcon={<AddCircleOutlineIcon />}
-          size="small"
-          onClick={() => {
-            navigate(`/daftarUser/tambahUser`);
-          }}
-        >
-          Tambah
-        </Button>
-        {id && (
-          <>
-            <ButtonGroup variant="contained">
-              <Button
-                color="primary"
-                startIcon={<EditIcon />}
-                sx={{ textTransform: "none" }}
-                onClick={() => {
-                  navigate(`/daftarUser/${id}/edit`);
-                }}
-              >
-                Ubah
-              </Button>
-              <Button
-                color="error"
-                startIcon={<DeleteOutlineIcon />}
-                sx={{ textTransform: "none" }}
-                onClick={handleClickOpen}
-              >
-                Hapus
-              </Button>
-            </ButtonGroup>
-            <Dialog
-              open={open}
-              onClose={handleClose}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title">{`Hapus Data`}</DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-slide-description">
-                  {`Yakin ingin menghapus data ${nama}?`}
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={() => deleteUser(id)}>Ok</Button>
-                <Button onClick={handleClose}>Cancel</Button>
-              </DialogActions>
-            </Dialog>
-          </>
-        )}
+        <ButtonModifier
+          id={id}
+          kode={noTps}
+          addLink={`/daftarTps/tambahTps`}
+          editLink={`/daftarTps/${id}/edit`}
+          deleteUser={deleteTps}
+          nameUser={noTps}
+        />
       </Box>
       <Divider sx={dividerStyle} />
-      {isUserExist && (
+      {isTpsExist && (
         <>
           <Box sx={showDataContainer}>
             <Box sx={showDataWrapper}>
-              <Typography sx={labelInput}>Nama</Typography>
+              <Typography sx={labelInput}>Caleg</Typography>
               <TextField
                 size="small"
                 id="outlined-basic"
@@ -263,9 +242,9 @@ const DaftarUser = () => {
                 InputProps={{
                   readOnly: true
                 }}
-                value={nama}
+                value={caleg}
               />
-              <Typography sx={[labelInput, spacingTop]}>Tipe User</Typography>
+              <Typography sx={[labelInput, spacingTop]}>No. TPS</Typography>
               <TextField
                 size="small"
                 id="outlined-basic"
@@ -273,9 +252,9 @@ const DaftarUser = () => {
                 InputProps={{
                   readOnly: true
                 }}
-                value={tipeUser}
+                value={noTps}
               />
-              <Typography sx={[labelInput, spacingTop]}>Password</Typography>
+              <Typography sx={[labelInput, spacingTop]}>Nama TPS</Typography>
               <TextField
                 size="small"
                 id="outlined-basic"
@@ -283,7 +262,43 @@ const DaftarUser = () => {
                 InputProps={{
                   readOnly: true
                 }}
-                value={password}
+                value={namaTps}
+              />
+            </Box>
+            <Box sx={[showDataWrapper, secondWrapper]}>
+              <Typography sx={labelInput}>Nama Saksi</Typography>
+              <TextField
+                size="small"
+                id="outlined-basic"
+                variant="filled"
+                InputProps={{
+                  readOnly: true
+                }}
+                value={namaSaksi}
+              />
+              <Typography sx={[labelInput, spacingTop]}>
+                No. HP Saksi
+              </Typography>
+              <TextField
+                size="small"
+                id="outlined-basic"
+                variant="filled"
+                InputProps={{
+                  readOnly: true
+                }}
+                value={noHpSaksi}
+              />
+              <Typography sx={[labelInput, spacingTop]}>
+                Jumlah Pemilih
+              </Typography>
+              <TextField
+                size="small"
+                id="outlined-basic"
+                variant="filled"
+                InputProps={{
+                  readOnly: true
+                }}
+                value={jumlahPemilih}
               />
             </Box>
           </Box>
@@ -294,7 +309,10 @@ const DaftarUser = () => {
         <SearchBar setSearchTerm={setSearchTerm} />
       </Box>
       <Box sx={tableContainer}>
-        <ShowTableUser currentPosts={currentPosts} searchTerm={searchTerm} />
+        <ShowTableDaftarTps
+          currentPosts={currentPosts}
+          searchTerm={searchTerm}
+        />
       </Box>
       <Box sx={tableContainer}>
         <Pagination
@@ -309,7 +327,7 @@ const DaftarUser = () => {
   );
 };
 
-export default DaftarUser;
+export default DaftarTps;
 
 const container = {
   p: 4

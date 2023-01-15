@@ -9,3 +9,7 @@ export { default as UbahUser } from "./User/UbahUser";
 // Caleg
 export { default as ProfilCaleg } from "./Caleg/ProfilCaleg";
 export { default as UbahProfilCaleg } from "./Caleg/UbahProfilCaleg";
+// Daftar TPS
+export { default as DaftarTps } from "./DaftarTps/DaftarTps";
+export { default as TambahTps } from "./DaftarTps/TambahTps";
+export { default as UbahTps } from "./DaftarTps/UbahTps";

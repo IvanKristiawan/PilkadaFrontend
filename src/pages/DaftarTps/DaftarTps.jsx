@@ -85,13 +85,14 @@ const DaftarTps = () => {
   };
 
   useEffect(() => {
-    getTpsForDoc();
-    getTpsData();
+    setInterval(async () => {
+      getTpsForDoc();
+      getTpsData();
+    }, 2000);
     id && getTpsById();
   }, [id]);
 
   const getTpsData = async () => {
-    setLoading(true);
     try {
       if (user.tipeUser === "ADMIN") {
         const allTps = await axios.post(`${tempUrl}/allTps`, {
@@ -109,11 +110,9 @@ const DaftarTps = () => {
     } catch (err) {
       setIsFetchError(true);
     }
-    setLoading(false);
   };
 
   const getTpsForDoc = async () => {
-    setLoading(true);
     try {
       if (user.tipeUser === "ADMIN") {
         const allTpsForDoc = await axios.post(`${tempUrl}/allTpsForDoc`, {
@@ -131,7 +130,6 @@ const DaftarTps = () => {
     } catch (err) {
       setIsFetchError(true);
     }
-    setLoading(false);
   };
 
   const getTpsById = async () => {

@@ -29,7 +29,7 @@ import "jspdf-autotable";
 import PrintIcon from "@mui/icons-material/Print";
 
 const DaftarUser = () => {
-  const { user } = useContext(AuthContext);
+  const { user, dispatch } = useContext(AuthContext);
   const location = useLocation();
   const id = location.pathname.split("/")[2];
   const { screenSize } = useStateContext();
@@ -132,7 +132,13 @@ const DaftarUser = () => {
       setTipeUser("");
       setPassword("");
       setLoading(false);
-      navigate("/daftarUser");
+
+      if (user._id === id) {
+        dispatch({ type: "LOGOUT" });
+        navigate("/");
+      } else {
+        navigate("/daftarUser");
+      }
     } catch (error) {
       console.log(error);
     }

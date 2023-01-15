@@ -19,7 +19,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 
 const UbahUser = () => {
-  const { user } = useContext(AuthContext);
+  const { user, dispatch } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
   const [nama, setNama] = useState("");
   const [password, setPassword] = useState("");
@@ -71,7 +71,13 @@ const UbahUser = () => {
           token: user.token
         });
         setLoading(false);
-        navigate(`/daftarUser/${id}`);
+
+        if (user._id === id) {
+          dispatch({ type: "LOGOUT" });
+          navigate("/");
+        } else {
+          navigate(`/daftarUser/${id}`);
+        }
       } catch (error) {
         console.log(error);
       }

@@ -2,7 +2,7 @@ import "./styles.css";
 import React, { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
-import { Header } from "./components";
+import { Header, ChipUser } from "./components";
 import {
   Sidebar,
   Menu,
@@ -10,7 +10,17 @@ import {
   MenuItem,
   useProSidebar
 } from "react-pro-sidebar";
-import { Divider, Box, Typography, CssBaseline, Tooltip } from "@mui/material";
+import {
+  Divider,
+  Box,
+  Typography,
+  CssBaseline,
+  Tooltip,
+  Avatar,
+  Stack,
+  Chip,
+  Paper
+} from "@mui/material";
 import { ErrorBoundary } from "react-error-boundary";
 import styled from "styled-components";
 import { Fallback } from "./components/Fallback";
@@ -18,6 +28,7 @@ import { Colors } from "./constants/styles";
 import { AuthContext } from "./contexts/AuthContext";
 import { useStateContext } from "./contexts/ContextProvider";
 import MenuIcon from "@mui/icons-material/Menu";
+import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import PersonPinIcon from "@mui/icons-material/PersonPin";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
@@ -89,9 +100,37 @@ const App = () => {
               defaultCollapsed={screenSize >= 650 ? false : true}
               collapsedWidth="0px"
             >
-              {/* <Box>
-                <Typography>AA</Typography>
-              </Box> */}
+              {user.nama ? (
+                <Paper elevation={6} sx={userAccount}>
+                  <Avatar sx={avatarIcon}>{user.nama.slice(0, 1)}</Avatar>
+                  <Box sx={userAccountWrapper}>
+                    <Typography variant="subtitle2" sx={userNama}>
+                      {user.nama}
+                    </Typography>
+                    <Typography variant="subtitle2" sx={userTipe}>
+                      {user.tipeUser}
+                    </Typography>
+                  </Box>
+                  <Box sx={avatarContainer}>
+                    <ChipUser />
+                  </Box>
+                </Paper>
+              ) : (
+                <Paper elevation={6} sx={userAccount}>
+                  <Avatar sx={avatarIcon}>{user.namaSaksi.slice(0, 1)}</Avatar>
+                  <Box sx={userAccountWrapper}>
+                    <Typography variant="subtitle2" sx={userNama}>
+                      {user.namaSaksi}
+                    </Typography>
+                    <Typography variant="subtitle2" sx={userTipe}>
+                      TPS
+                    </Typography>
+                  </Box>
+                  <Box sx={avatarContainer}>
+                    <ChipUser />
+                  </Box>
+                </Paper>
+              )}
               <Menu>
                 {user.tipeUser === "ADMIN" && (
                   <Link to="/daftarUser" style={linkText}>
@@ -145,12 +184,37 @@ const App = () => {
                   <Route path="/loginCaleg" element={<LoginCaleg />} />
                   <Route path="/loginSaksiTps" element={<LoginSaksiTps />} />
                   <Route path="/unauthorized" element={<Home />} />
-                  <Route path="/daftarUser" element={<DaftarUser />} />
-                  <Route path="/daftarUser/:id" element={<DaftarUser />} />
-                  <Route path="/daftarUser/:id/edit" element={<UbahUser />} />
+                  <Route
+                    path="/daftarUser"
+                    element={
+                      <ADMINRoute>
+                        <DaftarUser />
+                      </ADMINRoute>
+                    }
+                  />
+                  <Route
+                    path="/daftarUser/:id"
+                    element={
+                      <ADMINRoute>
+                        <DaftarUser />
+                      </ADMINRoute>
+                    }
+                  />
+                  <Route
+                    path="/daftarUser/:id/edit"
+                    element={
+                      <ADMINRoute>
+                        <UbahUser />
+                      </ADMINRoute>
+                    }
+                  />
                   <Route
                     path="/daftarUser/tambahUser"
-                    element={<TambahUser />}
+                    element={
+                      <ADMINRoute>
+                        <TambahUser />
+                      </ADMINRoute>
+                    }
                   />
                 </Routes>
               </ErrorBoundary>
@@ -182,4 +246,29 @@ const sidebarIcon = {
 const linkText = {
   textDecoration: "none",
   color: "inherit"
+};
+
+const userAccount = {
+  display: "flex",
+  p: 2
+};
+
+const userAccountWrapper = {
+  ml: 1
+};
+
+const userNama = {
+  fontWeight: 600
+};
+
+const userTipe = {
+  color: "gray"
+};
+
+const avatarContainer = {
+  ml: 10
+};
+
+const avatarIcon = {
+  bgcolor: "purple"
 };

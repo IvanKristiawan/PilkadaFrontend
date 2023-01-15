@@ -39,7 +39,9 @@ import {
   LoginSaksiTps,
   DaftarUser,
   TambahUser,
-  UbahUser
+  UbahUser,
+  ProfilCaleg,
+  UbahProfilCaleg
 } from "./pages/index";
 
 const App = () => {
@@ -146,8 +148,8 @@ const App = () => {
                   </Link>
                 )}
                 <Divider />
-                {user.tipeUser && (
-                  <Link to="/caleg" style={linkText}>
+                {user.tipeUser === "CALEG" && (
+                  <Link to="/profilCaleg" style={linkText}>
                     <MenuItem icon={<PersonPinIcon name="caleg" />}>
                       Caleg
                     </MenuItem>
@@ -214,6 +216,23 @@ const App = () => {
                       <ADMINRoute>
                         <TambahUser />
                       </ADMINRoute>
+                    }
+                  />
+                  {/* Caleg */}
+                  <Route
+                    path="/profilCaleg"
+                    element={
+                      <CALEGRoute>
+                        <ProfilCaleg />
+                      </CALEGRoute>
+                    }
+                  />
+                  <Route
+                    path="/profilCaleg/:id/edit"
+                    element={
+                      <CALEGRoute>
+                        <UbahProfilCaleg />
+                      </CALEGRoute>
                     }
                   />
                 </Routes>

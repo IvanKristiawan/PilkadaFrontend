@@ -6,3 +6,6 @@ export { default as LoginSaksiTps } from "./Login/LoginSaksiTps";
 export { default as DaftarUser } from "./User/DaftarUser";
 export { default as TambahUser } from "./User/TambahUser";
 export { default as UbahUser } from "./User/UbahUser";
+// Caleg
+export { default as ProfilCaleg } from "./Caleg/ProfilCaleg";
+export { default as UbahProfilCaleg } from "./Caleg/UbahProfilCaleg";
